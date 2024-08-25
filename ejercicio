@@ -1,0 +1,36 @@
+import re
+#analisis con libreria re 
+cadena = input("Ingresa una cadena: ")
+a = len(re.findall(r'[a-zA-Z]', cadena))
+b = len(re.findall(r'\d', cadena))
+c = len(re.findall(r'\s', cadena))
+
+letra = bool(re.search(r'[a-zA-Z]', cadena))
+numero = bool(re.search(r'\d', cadena))
+espacio = bool(re.search(r'\s', cadena))
+
+print("Tiene letra:", letra)
+print("Tiene número:", numero)
+print("Tiene espacio:", espacio)
+
+print("Tienes un total de", a, "letras y", b, "números y", c, "espacios.")
+
+# clasificar
+if a == 0 or b == 0:
+    print("Incompleta")
+elif a > b:
+    print("Predomina letras")
+elif b > a:
+    print("Predomina numeros")
+else:
+    print("Equilibrada")
+
+
+# adicional
+
+#longitud = len(cadena)
+longitud= a+b+c;
+if longitud>= 10:
+    print( "cadena larga")
+elif longitud<= 5:
+    print("cadena corta")
