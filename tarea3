@@ -1,0 +1,133 @@
+import json
+import os
+
+FILE_PATH = "agenda.json"
+
+def cargar_contactos():
+    if os.path.exists(FILE_PATH):
+        with open(FILE_PATH, "r") as file:
+            return json.load(file)["contactos"]
+    return []
+
+def guardar_contactos(contactos):
+    with open(FILE_PATH, "w") as file:
+        json.dump({"contactos" : contactos}, file, indent = 4)
+
+class Contacto:
+    def __init__(self, nombre, telefono, email, direccion, fecha_nacimiento):
+        self.nombre = nombre
+        self.telefono = telefono
+        self.email = email
+        self.direccion = direccion
+        self.fecha_nacimiento = fecha_nacimiento
+
+    def __str__(self):
+        return f"{self.nombre}: {self.telefono}, {self.email}, {self.direccion}, {self.fecha_nacimiento}"
+
+def agregar_contacto(nombre, telefono, email, direccion, fecha_nacimiento):
+    contactos = cargar_contactos()
+    if any(contacto.nombre == nombre for contacto in contactos):
+        raise ValueError("Contacto con mismo nombre ya existe")
+    nuevo_contacto = Contacto(nombre, telefono, email, direccion, fecha_nacimiento)
+    contactos.append(nuevo_contacto.__dict__)
+    guardar_contactos(contactos)
+    print(f"Contacto: {nombre} agregado con éxito.")
+
+def eliminar_contacto(nombre):
+    contactos = cargar_contactos()
+    contactos_filtrados = [contacto for contacto in contactos if contacto['nombre'] != nombre]
+    if len(contactos) == len(contactos_filtrados):
+        raise ValueError("Contacto no encontrado")
+    else:
+        guardar_contactos(contactos_filtrados)
+        print(f"Contacto eliminado con éxito.")
+
+def modificar_contacto(nombre, **kwargs):
+    contactos = cargar_contactos()
+    for contacto in contactos:
+        if contacto['nombre'] == nombre:
+            for key, value in kwargs.items():
+                contacto[key] = value
+            guardar_contactos(contactos)
+            return
+    raise ValueError("Contacto no encontrado")
+
+def actualizar_contacto(nombre, telefono=None, email=None):
+    contactos = cargar_contactos()
+    for contacto in contactos:
+        if contacto['nombre'] == nombre:
+            if telefono:
+                contacto['telefono'] = telefono
+            if email:
+                contacto['email'] = email
+            guardar_contactos(contactos)
+            return
+    raise ValueError("Contacto no encontrado")
+
+def buscar_contacto(nombre=None, telefono=None):
+    contactos = cargar_contactos()
+    if nombre:
+        for contacto in contactos:
+            if contacto['nombre'] == nombre:
+                return Contacto(**contacto)
+    elif telefono:
+        for contacto in contactos:
+            if contacto['telefono'] == telefono:
+                return Contacto(**contacto)
+    return None
+
+def listar_contactos():
+    contactos = cargar_contactos()
+    print(" ---- Contactos ---- ")
+    if contactos:
+        for contacto in sorted(contactos, key=lambda x: x['nombre']):
+            print(Contacto(**contacto))
+    else:
+        print("No hay contactos!")
+
+def principal():
+    while True:
+        print("Menú:")
+        print("1. Agregar Contacto")
+        print("2. Eliminar Contacto")
+        print("3. Modificar Contacto")
+        print("4. Actualizar Contacto")
+        print("5. Buscar Contacto")
+        print("6. Listar Contactos")
+        print("7. Salir")
+        choice = input("Seleccione una opción: ")
+        if choice == '1':
+            nombre = input("Ingrese el nombre del contacto: ")
+            telefono = input("Ingrese el teléfono del contacto: ")
+            email = input("Ingrese el correo electrónico del contacto: ")
+            direccion = input("Ingrese la dirección del contacto: ")
+            fecha_nacimiento = input("Ingrese la fecha de nacimiento del contacto (dd/mm/yyyy): ")
+            agregar_contacto(nombre, telefono, email, direccion, tuple(map(int, fecha_nacimiento.split('/'))))
+        elif choice == '2':
+            nombre = input("Ingrese el nombre del contacto a eliminar: ")
+            eliminar_contacto(nombre)
+        elif choice == '3':
+            nombre = input("Ingrese el nombre del contacto a modificar: ")
+            field = input("Ingrese el campo a modificar (nombre, teléfono, correo electrónico, dirección o fecha de nacimiento): ")
+            value = input("Ingrese el nuevo valor: ")
+            modificar_contacto(nombre, **{field: value})
+        elif choice == '4':
+            nombre = input("Ingrese el nombre del contacto a actualizar: ")
+            telefono = input("Ingrese el nuevo teléfono (opcional): ")
+            email = input("Ingrese el nuevo correo electrónico (opcional): ")
+            actualizar_contacto(nombre, telefono, email)
+        elif choice == '5':
+            nombre = input("Ingrese el nombre del contacto a buscar: ")
+            contacto = buscar_contacto(nombre)
+            if contacto:
+                print(contacto)
+            else:
+                print("Contacto no encontrado")
+        elif choice == '6':
+            listar_contactos()
+        elif choice == '7':
+            break
+        else:
+            print("Opción inválida")
+
+principal()
