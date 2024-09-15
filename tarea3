@@ -95,37 +95,37 @@ def principal():
         print("5. Buscar Contacto")
         print("6. Listar Contactos")
         print("7. Salir")
-        choice = input("Seleccione una opción: ")
-        if choice == '1':
+        opcion = input("Seleccione una opción: ")
+        if opcion == '1':
             nombre = input("Ingrese el nombre del contacto: ")
             telefono = input("Ingrese el teléfono del contacto: ")
             email = input("Ingrese el correo electrónico del contacto: ")
             direccion = input("Ingrese la dirección del contacto: ")
             fecha_nacimiento = input("Ingrese la fecha de nacimiento del contacto (dd/mm/yyyy): ")
             agregar_contacto(nombre, telefono, email, direccion, tuple(map(int, fecha_nacimiento.split('/'))))
-        elif choice == '2':
+        elif opcion == '2':
             nombre = input("Ingrese el nombre del contacto a eliminar: ")
             eliminar_contacto(nombre)
-        elif choice == '3':
+        elif opcion == '3':
             nombre = input("Ingrese el nombre del contacto a modificar: ")
             field = input("Ingrese el campo a modificar (nombre, teléfono, correo electrónico, dirección o fecha de nacimiento): ")
             value = input("Ingrese el nuevo valor: ")
             modificar_contacto(nombre, **{field: value})
-        elif choice == '4':
+        elif opcion == '4':
             nombre = input("Ingrese el nombre del contacto a actualizar: ")
             telefono = input("Ingrese el nuevo teléfono (opcional): ")
             email = input("Ingrese el nuevo correo electrónico (opcional): ")
             actualizar_contacto(nombre, telefono, email)
-        elif choice == '5':
+        elif opcion == '5':
             nombre = input("Ingrese el nombre del contacto a buscar: ")
             contacto = buscar_contacto(nombre)
             if contacto:
                 print(contacto)
             else:
                 print("Contacto no encontrado")
-        elif choice == '6':
+        elif opcion == '6':
             listar_contactos()
-        elif choice == '7':
+        elif opcion == '7':
             break
         else:
             print("Opción inválida")
