@@ -1,0 +1,128 @@
+intervalo =[]
+def isbn_existente(isbn,inventario):
+    for libro in inventario:
+        if isbn in libro:
+            return True
+    return False
+
+def obtener_libro_isbn(isbn, inventario):
+    for libro in inventario:
+        if isbn in libro:
+            return libro
+    return None
+
+def agregar_libro(inventario,isbn, titulo,autor,year,cantidad):
+    if isbn_existente(isbn, inventario):
+        raise ValueError(f"El isbn {isbn} ya existe en el inventario")
+    libro ={
+        isbn : (titulo, autor,year, cantidad)
+    }
+    inventario.append(libro)
+    print(f"Libro {titulo} añadido al inventario")
+def eliminar_libro(isbn, inventario):
+    libro = obtener_libro_isbn(isbn,inventario)
+    if libro is None:
+        raise ValueError(f" El isbn {isbn} no se encuentra en el inventario")
+    inventario.remove(libro)
+    print(f"Libro con isbn {isbn} eliminado del inventario")
+
+def actualizar_stock(inventario,isbn,cantidad):
+    libro = obtener_libro_isbn(isbn,inventario)
+    if libro is None:
+        raise ValueError(f"El isbn {isbn} no se encuentra en el inventario")
+    titulo,autor,year,stock = libro[isbn]
+    if cantidad <= 0 and abs(cantidad) > stock:
+        raise ValueError(f"Stock insuficiente para reducir  {abs(cantidad)} unidades")
+    
+    libro[isbn] =(titulo,autor,year,stock + cantidad)
+    print(f"Stock del libro{titulo} actualizada ")
+    print(f"cantidad actual:{stock + cantidad}")
+
+def buscar_libro(inventario, criterio, valor):
+    resultados = []
+    for libro in inventario:
+        for detalles in libro.values():
+            if criterio == "titulo" and detalles[0].lower() == valor.lower():
+                resultados.append(detalles)
+            elif criterio == "autor" and detalles[1].lower() == valor.lower():
+                resultados.append(detalles)
+    if not resultados:
+        print(f"no se encontraron libros con {criterio} : '{valor}' ")
+    else:
+        print(f"Se encontraron libros con {criterio} : '{valor}'")
+        print(f"Titulo:{detalles[0]}")
+        print(f"Autor:{detalles[1]}")
+        print(f"Año:{detalles[2]}")
+        print(f"Stock:{detalles[3]}")
+        print("..............................")
+        print("..............................")
+    return resultados
+
+def mostrar_inventario():
+    if not inventario:
+        print("El inventario esta vacio")
+        return
+    print("****   inventrio de libros   ****")
+    libros_ordenados = sorted(inventario, key = lambda libro: list(libro.value())[0][0])
+    for libro in libros_ordenados:
+        isbn, detalles = list(libro.items()[0])
+        print(f"isbn: {isbn}")
+        print(f"Titulo: {detalles[0]}")
+        print(f"Autor: {detalles[1]}")
+        print(f"Año: {detalles[2]}")
+        print(f"Stock: {detalles[3]}")
+        print("*"*12)
+        print("*"*12)
+
+# menu
+def menu():
+    print("\n ... Menu...")
+    print("1. Agregar libro")
+    print("2. Eliminar libro")
+    print("3. Actualizar stock")
+    print("4. Buscar libro por titulo o autor")
+    print("5. Mostrar inventario")
+    print("6. Salir")
+    return input("selecciona una opcion:")
+def principal():
+    inventario=[]
+    while True:
+        opcion = menu()
+        if opcion == "1":
+            try:
+                isbn = input("ingrese el isbn del libro:")
+                titulo = input("ingrese el titulo del libro:")
+                autor = input("ingrese el autor del libro:")
+                year = int(input("ingrese el año del libro:"))
+                cantidad = int(input("Introduce la cantidad de stock"))
+                agregar_libro(inventario, isbn,titulo, autor,year,cantidad)
+            except ValueError as e:
+                print (f"Error: {e}")
+        if opcion == "2":
+            try:
+                isbn = input("ingrese el isbn del libro a eliminar:")
+                eliminar_libro(inventario, isbn)
+            except ValueError as e:
+                print (f"Error: {e}")
+        if opcion == "3":
+            try:
+                isbn = input("ingrese el isbn del libro a actualizar:")
+                cantidad = int(input("ingrese la cantidad de stock a actualizar"))
+                actualizar_stock(inventario, isbn, cantidad)
+            except ValueError as e:
+                print (f"Error: {e}")
+        if opcion == "4":
+            criterio = input("buscar por titulo o autor?(titulo7autor:").strip().lower()
+            if criterio not in  ["titulo", "autor"]:
+                print("end=Criterio no valido, intenta de nuevo")
+                continue 
+            valor = input(f"Ingresa el {criterio} para buscar")
+            buscar_libro(inventario,criterio,valor)
+        if opcion == "5":
+                mostrar_inventario(inventario)
+        if opcion == "6":
+                print("adios...")
+                break
+        else:
+            print("Opcion no valida, intenta de nuevo")
+principal()
